@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AfsanAGI</title>
+<style>
+body { background:#000; color:#fff; font-family:sans-serif; display:flex; justify-content:center; align-items:center; min-height:100vh; margin:0; }
+#chat-container { width:400px; max-width:90%; background:#111; border-radius:15px; padding:15px; box-shadow:0 0 25px #0f0; display:flex; flex-direction:column; }
+#chat-box { flex:1; overflow-y:auto; border:1px solid #0f0; padding:10px; border-radius:10px; margin-bottom:10px; height:350px; }
+input, button { padding:10px; border-radius:10px; border:none; font-size:14px; }
+input { flex:1; margin-right:5px; outline:none; }
+button { background:#0f0; color:#000; font-weight:bold; cursor:pointer; }
+.msg-user { text-align:right; background:#222; color:#fff; padding:6px 10px; margin:5px 0; border-radius:8px; display:inline-block; max-width:80%; align-self:flex-end; }
+.msg-agi { text-align:left; background:#0f0; color:#000; padding:6px 10px; margin:5px 0; border-radius:8px; display:inline-block; max-width:80%; align-self:flex-start; }
+</style>
+</head>
+<body>
+<div id="chat-container">
+  <div id="chat-box"></div>
+  <div style="display:flex;">
+    <input id="user-input" placeholder="Ask AfsanAGI...">
+    <button id="send-btn">Send</button>
+  </div>
+</div>
+
+<script>
+const chatBox = document.getElementById('chat-box');
+const userInput = document.getElementById('user-input');
+const sendBtn = document.getElementById('send-btn');
+
+function appendMessage(sender, text) {
+    const div = document.createElement('div');
+    div.className = sender === 'user' ? 'msg-user' : 'msg-agi';
+    div.textContent = text;
+    chatBox.appendChild(div);
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+sendBtn.onclick = async () => {
+    const prompt = userInput.value.trim();
+    if (!prompt) return;
+    appendMessage('user', prompt);
+    userInput.value = '';
+    appendMessage('agi', 'Loading...');
+    try {
+        const res = await fetch('https://YOUR_VERCEL_URL/api/afsANagi', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prompt })
+        });
+        const data = await res.json();
+        chatBox.lastChild.textContent = data.response || 'No response from AfsanAGI';
+    } catch (err) {
+        chatBox.lastChild.textContent = 'Error loading response';
+        console.error(err);
+    }
+};
+</script>
+</body>
+</html>
