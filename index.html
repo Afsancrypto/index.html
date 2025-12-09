@@ -5,11 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AfsanAGI</title>
 <style>
-body { font-family: Arial, sans-serif; background: #0f0f0f; color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0;}
-#chat { width: 90%; max-width: 600px; background: #1e1e1e; padding: 20px; border-radius: 10px; }
-#messages { height: 300px; overflow-y: auto; margin-bottom: 10px; border: 1px solid #333; padding: 10px; border-radius: 5px; }
-input, button { padding: 10px; border-radius: 5px; border: none; margin: 2px;}
-button { background: #4caf50; color: #fff; cursor: pointer;}
+body { font-family: Arial; background:#0f0f0f; color:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; margin:0;}
+#chat { width:90%; max-width:600px; background:#1e1e1e; padding:20px; border-radius:10px;}
+#messages { height:300px; overflow-y:auto; margin-bottom:10px; border:1px solid #333; padding:10px; border-radius:5px;}
+input, button { padding:10px; border-radius:5px; border:none; margin:2px; width: calc(100% - 24px);}
+button { background:#4caf50; color:#fff; cursor:pointer;}
 </style>
 </head>
 <body>
@@ -29,6 +29,7 @@ async function sendPrompt() {
 
   messagesDiv.innerHTML += `<div><b>You:</b> ${prompt}</div>`;
   promptInput.value = '';
+  messagesDiv.scrollTop = messagesDiv.scrollHeight;
 
   try {
     const res = await fetch('/api/afsANagi', {
