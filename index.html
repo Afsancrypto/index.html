@@ -44,7 +44,7 @@ sendBtn.onclick = async () => {
     userInput.value = '';
     appendMessage('agi', 'Loading...');
     try {
-        const res = await fetch('https://afsANagi-vercel.vercel.app/api/afsANagi', {
+        const res = await fetch('https://afs-a-nagi-vercel-e87q.vercel.app/api/afsANagi', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ prompt })
