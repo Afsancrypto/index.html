@@ -5,47 +5,44 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AfsanAGI</title>
 <style>
-body { font-family: Arial, sans-serif; background:#111; color:#eee; display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100vh; margin:0; }
-textarea { width:90%; height:120px; padding:10px; font-size:16px; margin-bottom:10px; background:#222; color:#eee; border:none; border-radius:5px; }
-button { padding:10px 20px; font-size:16px; background:#4caf50; color:#fff; border:none; border-radius:5px; cursor:pointer; }
-#output { width:90%; margin-top:20px; padding:10px; background:#222; border-radius:5px; min-height:80px; white-space:pre-wrap; }
-h2 { margin-bottom:20px; }
+body { font-family: Arial, sans-serif; background: #0f0f0f; color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0;}
+#chat { width: 90%; max-width: 600px; background: #1e1e1e; padding: 20px; border-radius: 10px; }
+#messages { height: 300px; overflow-y: auto; margin-bottom: 10px; border: 1px solid #333; padding: 10px; border-radius: 5px; }
+input, button { padding: 10px; border-radius: 5px; border: none; margin: 2px;}
+button { background: #4caf50; color: #fff; cursor: pointer;}
 </style>
 </head>
 <body>
 
-<h2>AfsanAGI - Mistral Free</h2>
-<textarea id="prompt" placeholder="Ask me anything..."></textarea>
-<button onclick="askAfsanAGI()">Ask</button>
-<div id="output"></div>
+<div id="chat">
+  <div id="messages"></div>
+  <input type="text" id="prompt" placeholder="Type your message..." />
+  <button onclick="sendPrompt()">Send</button>
+</div>
 
 <script>
-async function askAfsanAGI() {
-    const prompt = document.getElementById("prompt").value.trim();
-    if(!prompt) return alert("Please type a prompt!");
+async function sendPrompt() {
+  const promptInput = document.getElementById('prompt');
+  const messagesDiv = document.getElementById('messages');
+  const prompt = promptInput.value.trim();
+  if(!prompt) return;
 
-    document.getElementById("output").innerText = "Loading...";
+  messagesDiv.innerHTML += `<div><b>You:</b> ${prompt}</div>`;
+  promptInput.value = '';
 
-    try {
-        const res = await fetch('/api/afsANagi', {
-            method:'POST',
-            headers:{ 'Content-Type':'application/json' },
-            body: JSON.stringify({ prompt })
-        });
+  try {
+    const res = await fetch('/api/afsANagi', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt })
+    });
 
-        const data = await res.json();
-
-        if(data.response) {
-            document.getElementById("output").innerText = data.response;
-        } else if(data.error) {
-            document.getElementById("output").innerText = "Error: " + data.error;
-        } else {
-            document.getElementById("output").innerText = "No response received.";
-        }
-
-    } catch(e) {
-        document.getElementById("output").innerText = "Error: "+ e.message;
-    }
+    const data = await res.json();
+    messagesDiv.innerHTML += `<div><b>AfsanAGI:</b> ${data.response}</div>`;
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+  } catch(err) {
+    messagesDiv.innerHTML += `<div style="color:red;">Error: ${err.message}</div>`;
+  }
 }
 </script>
 
