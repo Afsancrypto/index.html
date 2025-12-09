@@ -5,57 +5,49 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AfsanAGI</title>
 <style>
-body { background:#000; color:#fff; font-family:sans-serif; display:flex; justify-content:center; align-items:center; min-height:100vh; margin:0; }
-#chat-container { width:400px; max-width:90%; background:#111; border-radius:15px; padding:15px; box-shadow:0 0 25px #0f0; display:flex; flex-direction:column; }
-#chat-box { flex:1; overflow-y:auto; border:1px solid #0f0; padding:10px; border-radius:10px; margin-bottom:10px; height:350px; }
-input, button { padding:10px; border-radius:10px; border:none; font-size:14px; }
-input { flex:1; margin-right:5px; outline:none; }
-button { background:#0f0; color:#000; font-weight:bold; cursor:pointer; }
-.msg-user { text-align:right; background:#222; color:#fff; padding:6px 10px; margin:5px 0; border-radius:8px; display:inline-block; max-width:80%; align-self:flex-end; }
-.msg-agi { text-align:left; background:#0f0; color:#000; padding:6px 10px; margin:5px 0; border-radius:8px; display:inline-block; max-width:80%; align-self:flex-start; }
+body { font-family: Arial, sans-serif; background:#111; color:#eee; display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100vh; margin:0; }
+textarea { width:90%; height:120px; padding:10px; font-size:16px; margin-bottom:10px; background:#222; color:#eee; border:none; border-radius:5px; }
+button { padding:10px 20px; font-size:16px; background:#4caf50; color:#fff; border:none; border-radius:5px; cursor:pointer; }
+#output { width:90%; margin-top:20px; padding:10px; background:#222; border-radius:5px; min-height:80px; white-space:pre-wrap; }
+h2 { margin-bottom:20px; }
 </style>
 </head>
 <body>
-<div id="chat-container">
-  <div id="chat-box"></div>
-  <div style="display:flex;">
-    <input id="user-input" placeholder="Ask AfsanAGI...">
-    <button id="send-btn">Send</button>
-  </div>
-</div>
+
+<h2>AfsanAGI - Mistral Free</h2>
+<textarea id="prompt" placeholder="Ask me anything..."></textarea>
+<button onclick="askAfsanAGI()">Ask</button>
+<div id="output"></div>
 
 <script>
-const chatBox = document.getElementById('chat-box');
-const userInput = document.getElementById('user-input');
-const sendBtn = document.getElementById('send-btn');
+async function askAfsanAGI() {
+    const prompt = document.getElementById("prompt").value.trim();
+    if(!prompt) return alert("Please type a prompt!");
 
-function appendMessage(sender, text) {
-    const div = document.createElement('div');
-    div.className = sender === 'user' ? 'msg-user' : 'msg-agi';
-    div.textContent = text;
-    chatBox.appendChild(div);
-    chatBox.scrollTop = chatBox.scrollHeight;
-}
+    document.getElementById("output").innerText = "Loading...";
 
-sendBtn.onclick = async () => {
-    const prompt = userInput.value.trim();
-    if (!prompt) return;
-    appendMessage('user', prompt);
-    userInput.value = '';
-    appendMessage('agi', 'Loading...');
     try {
-        const res = await fetch('https://afs-a-nagi-vercel-e87q.vercel.app/api/afsANagi', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+        const res = await fetch('/api/afsANagi', {
+            method:'POST',
+            headers:{ 'Content-Type':'application/json' },
             body: JSON.stringify({ prompt })
         });
+
         const data = await res.json();
-        chatBox.lastChild.textContent = data.response || 'No response from AfsanAGI';
-    } catch (err) {
-        chatBox.lastChild.textContent = 'Error loading response';
-        console.error(err);
+
+        if(data.response) {
+            document.getElementById("output").innerText = data.response;
+        } else if(data.error) {
+            document.getElementById("output").innerText = "Error: " + data.error;
+        } else {
+            document.getElementById("output").innerText = "No response received.";
+        }
+
+    } catch(e) {
+        document.getElementById("output").innerText = "Error: "+ e.message;
     }
-};
+}
 </script>
+
 </body>
 </html>
